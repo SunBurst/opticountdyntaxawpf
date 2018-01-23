@@ -19,9 +19,9 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Menu Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0">
-            <!-- <MenuItem Header="_Setup">
+            <MenuItem Header="_Setup">
                 <MenuItem Header="_Output"/>
-            </MenuItem> -->
+            </MenuItem>
             <MenuItem Header="_Connection">
                 <MenuItem Header="_Connect"/>
                 <MenuItem Header="_Disconnect"/>

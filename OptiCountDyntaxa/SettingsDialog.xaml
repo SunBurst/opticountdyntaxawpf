@@ -8,8 +8,57 @@
         Title="SettingsDialog" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
     <Grid Margin="15">
         <TabControl>
-            <TabItem Header="General" />
-            <TabItem Header="Test"></TabItem>
+            <TabItem Header="Phyto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="Site">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Margin="5">
+                                <ComboBoxItem IsSelected="True">Cell</ComboBoxItem>
+                                <ComboBoxItem>Text</ComboBoxItem>
+                            </ComboBox>
+                            <TextBox/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Date">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Margin="5">
+                                <ComboBoxItem IsSelected="True">Cell</ComboBoxItem>
+                                <ComboBoxItem>Text</ComboBoxItem>
+                            </ComboBox>
+                            <TextBox/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Analysis Method">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Margin="5">
+                                <ComboBoxItem IsSelected="True">Cell</ComboBoxItem>
+                                <ComboBoxItem>Text</ComboBoxItem>
+                            </ComboBox>
+                            <TextBox/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Header="Analysis Laboratory">
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Margin="5">
+                                <ComboBoxItem IsSelected="True">Cell</ComboBoxItem>
+                                <ComboBoxItem>Text</ComboBoxItem>
+                            </ComboBox>
+                            <TextBox/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Zoo"></TabItem>
         </TabControl>
     </Grid>
 </Window>
