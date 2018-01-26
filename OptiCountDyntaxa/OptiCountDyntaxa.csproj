@@ -35,19 +35,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ArtDatabanken">
-      <HintPath>..\..\libs\ArtDatabanken.dll</HintPath>
+      <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.dll</HintPath>
     </Reference>
     <Reference Include="ArtDatabanken.Data">
-      <HintPath>..\..\libs\ArtDatabanken.Data.dll</HintPath>
+      <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.Data.dll</HintPath>
     </Reference>
     <Reference Include="ArtDatabanken.WebService.Client">
-      <HintPath>..\..\libs\ArtDatabanken.WebService.Client.dll</HintPath>
+      <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.WebService.Client.dll</HintPath>
     </Reference>
     <Reference Include="ArtDatabanken.WebService.Data">
-      <HintPath>..\..\libs\ArtDatabanken.WebService.Data.dll</HintPath>
+      <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.WebService.Data.dll</HintPath>
     </Reference>
     <Reference Include="ArtDatabanken.WebService.Proxy">
-      <HintPath>..\..\libs\ArtDatabanken.WebService.Proxy.dll</HintPath>
+      <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.WebService.Proxy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -71,9 +71,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Config.cs" />
     <Compile Include="SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Sample.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

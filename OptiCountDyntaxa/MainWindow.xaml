@@ -15,10 +15,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="349*"/>
+            <ColumnDefinition Width="63*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Menu Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0">
+        <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0">
             <MenuItem Header="_Setup">
                 <MenuItem Header="_Output"/>
             </MenuItem>
@@ -27,17 +28,43 @@
                 <MenuItem Header="_Disconnect"/>
             </MenuItem>
         </Menu>
-        <ListBox Grid.Row="1" Grid.Column="0" Name="FileList" Margin="10"/>
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,10,10,0">
+        <ListView Grid.Row="1" Grid.Column="0" Name="FileList" Margin="10" Grid.ColumnSpan="2">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="File" Width="120" DisplayMemberBinding="{Binding FileName}" />
+                    <GridViewColumn Header="Site" Width="120" DisplayMemberBinding="{Binding Site}" />
+                    <GridViewColumn Header="Date" Width="50" DisplayMemberBinding="{Binding Date}" />
+                    <GridViewColumn Header="Full Path" Width="150" DisplayMemberBinding="{Binding FilePath}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <!-- <ListBox Grid.Row="1" Grid.Column="0" Name="FileList" Margin="10" Grid.ColumnSpan="2"/> -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,10,10,0">
             <Button Click="moveUp_Click">Move Up</Button>
             <Button Click="moveDown_Click">Move Down</Button>
             <Button Click="removeFile_Click">Remove File</Button>
             <Button Name="btnAddFiles" Click="addFiles_Click">Add File(s)</Button>
         </StackPanel>
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
-            <Label FontWeight="Bold">Plankton type</Label>
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+            <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="Sample Info">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Site"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="siteTextBox" Text="{Binding Path=SiteCell}"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Date"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="dateTextBox" Text="{Binding Path=DateCell}"/>
+                </Grid>
+            </GroupBox>
+            <!-- <Label FontWeight="Bold">Plankton type</Label>
             <RadioButton GroupName="plankton" IsChecked="True">Phyto</RadioButton>
-            <RadioButton GroupName="plankton">Zoo</RadioButton>
+            <RadioButton GroupName="plankton">Zoo</RadioButton> -->
 
             <Label FontWeight="Bold">Database</Label>
             <RadioButton GroupName="database" IsChecked="True">Dyntaxa</RadioButton>
@@ -47,7 +74,7 @@
             <RadioButton GroupName="output" IsChecked="True">Separate files</RadioButton>
             <RadioButton GroupName="output">Merged file</RadioButton>
         </StackPanel>
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal">
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal">
             <Button VerticalAlignment="Center">Ok</Button>
         </StackPanel>
         <!-- <StatusBar Grid.Row="4" Grid.ColumnSpan="2">
