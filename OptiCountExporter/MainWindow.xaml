@@ -1,0 +1,77 @@
+﻿<Window x:Class="OptiCountExporter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OptiCountDyntaxa"
+        mc:Ignorable="d"
+        Title="OptiCountExporter" Height="500" Width="500">
+    <Grid Name="MainGrid" Drop="MainGrid_Drop" AllowDrop="True" Background="Transparent">
+        <Grid.RowDefinitions>
+            <!-- <RowDefinition Height="Auto"/> -->
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="349*"/>
+            <ColumnDefinition Width="63*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <!-- <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <MenuItem Header="_Setup">
+                <MenuItem Header="_Output"/>
+            </MenuItem>
+            <MenuItem Header="_Connection">
+                <MenuItem Header="_Connect"/>
+                <MenuItem Header="_Disconnect"/>
+            </MenuItem>
+        </Menu> -->
+        <ListView Grid.Row="0" Grid.Column="0" Name="FileList" Margin="10" Grid.ColumnSpan="2">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="File" Width="120" DisplayMemberBinding="{Binding FileName}" />
+                    <GridViewColumn Header="Site" Width="120" DisplayMemberBinding="{Binding Site}" />
+                    <GridViewColumn Header="Date" Width="50" DisplayMemberBinding="{Binding Date}" />
+                    <GridViewColumn Header="Full Path" Width="150" DisplayMemberBinding="{Binding FilePath}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <!-- <ListBox Grid.Row="1" Grid.Column="0" Name="FileList" Margin="10" Grid.ColumnSpan="2"/> -->
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,10,10,0">
+            <Button Click="moveUp_Click">Move Up</Button>
+            <Button Click="moveDown_Click">Move Down</Button>
+            <Button Click="removeFile_Click">Remove File</Button>
+            <Button Name="btnAddFiles" Click="addFiles_Click">Add File(s)</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+            <Label FontWeight="Bold" Content="Plankton Type" />
+            <RadioButton GroupName="planktontype" IsChecked="True">Phyto</RadioButton>
+            <RadioButton GroupName="planktontype">Zoo</RadioButton>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+            <Label FontWeight="Bold" Content="Species Index" />
+            <RadioButton GroupName="database" IsChecked="True">Dyntaxa</RadioButton>
+            <!-- <RadioButton GroupName="database">PEG</RadioButton> -->
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+            <Label FontWeight="Bold">Output</Label>
+            <RadioButton GroupName="output" IsChecked="True">Separate Excel files</RadioButton>
+            <!-- <RadioButton GroupName="output">Merged file</RadioButton> -->
+        </StackPanel>
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" Orientation="Horizontal">
+            <Button VerticalAlignment="Center" Click="ExportSamples">Ok</Button>
+        </StackPanel>
+        <StatusBar Grid.Row="5" Grid.ColumnSpan="3">
+            <StatusBarItem>
+                <Ellipse Name="connectionStatusIcon" Height="10" Width="10" Fill="Red" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <Label Name="connectionStatusText" Content="Not connected to Dyntaxa" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

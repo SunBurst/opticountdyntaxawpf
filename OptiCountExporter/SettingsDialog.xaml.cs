@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace OptiCountDyntaxa
+namespace OptiCountExporter
 {
     /// <summary>
     /// Interaction logic for SettingsDialog.xaml

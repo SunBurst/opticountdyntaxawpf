@@ -6,7 +6,7 @@ using ArtDatabanken.WebService.Client.TaxonService;
 using ArtDatabanken.WebService.Client.UserService;
 
 
-namespace OptiCountDyntaxa
+namespace OptiCountExporter
 {
     public class DyntaxaService
     {
