@@ -4,7 +4,7 @@ namespace OptiCountExporter
 {
     public class Sample
     {
-        public string Site { get; set; }
+        public string Origin { get; set; }
 
         public DateTime Date { get; set; }
 

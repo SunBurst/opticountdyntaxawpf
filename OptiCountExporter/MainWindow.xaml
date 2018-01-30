@@ -34,7 +34,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="File" Width="120" DisplayMemberBinding="{Binding FileName}" />
-                    <GridViewColumn Header="Site" Width="120" DisplayMemberBinding="{Binding Site}" />
+                    <GridViewColumn Header="Origin" Width="120" DisplayMemberBinding="{Binding Origin}" />
                     <GridViewColumn Header="Date" Width="50" DisplayMemberBinding="{Binding Date}" />
                     <GridViewColumn Header="Full Path" Width="150" DisplayMemberBinding="{Binding FilePath}" />
                 </GridView>
@@ -49,8 +49,8 @@
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
             <Label FontWeight="Bold" Content="Plankton Type" />
-            <RadioButton GroupName="planktontype" IsChecked="True">Phyto</RadioButton>
-            <RadioButton GroupName="planktontype">Zoo</RadioButton>
+            <RadioButton GroupName="planktontype" Name="phytoradiobutton" IsChecked="True">Phyto</RadioButton>
+            <RadioButton GroupName="planktontype" Name="zooradiobutton">Zoo</RadioButton>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
             <Label FontWeight="Bold" Content="Species Index" />

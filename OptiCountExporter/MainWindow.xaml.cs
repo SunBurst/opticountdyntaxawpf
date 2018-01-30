@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using ExcelDataReader;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace OptiCountExporter
 {
@@ -135,7 +136,7 @@ namespace OptiCountExporter
                         }
                     }
 
-                    items.Add(new Sample() { Site = origin, Date = date, FileName = fileName, FilePath = filePath });
+                    items.Add(new Sample() { Origin = origin, Date = date, FileName = fileName, FilePath = filePath });
                 }
                 FileList.ItemsSource = items;
             }
@@ -251,7 +252,7 @@ namespace OptiCountExporter
                             } while (reader.NextResult());
                         }
                     }
-                    items.Add(new Sample() { Site = origin, Date = date, FileName = fileName, FilePath = filePath });
+                    items.Add(new Sample() { Origin = origin, Date = date, FileName = fileName, FilePath = filePath });
                 }
             }
             FileList.ItemsSource = items;
@@ -305,13 +306,61 @@ namespace OptiCountExporter
 
         private void ExportSamples(object sender, RoutedEventArgs e)
         {
-            foreach (var sample in items)
+            
+            if (phytoradiobutton.IsChecked == true)
             {
-                Console.WriteLine(sample.FileName);
-                Console.WriteLine(sample.Site);
-                Console.WriteLine(sample.Date);
-                Console.WriteLine(sample.FilePath);
+                List<ExportedPhytoSample> exportedSamples = new List<ExportedPhytoSample>();
+
+                foreach (var sample in items)
+                {
+                    ExportedPhytoSample phytoSample = new ExportedPhytoSample();
+                    using (var stream = File.Open(sample.FilePath, FileMode.Open, FileAccess.Read))
+                    {
+
+                        // Auto-detect format, supports:
+                        //  - Binary Excel files (2.0-2003 format; *.xls)
+                        //  - OpenXml Excel files (2007 format; *.xlsx)
+                        using (var reader = ExcelReaderFactory.CreateReader(stream))
+                        {
+                            do
+                            {
+                                int rowNum = 0;
+                                while (reader.Read())
+                                {
+                                    // Start of species declarations
+                                    if (rowNum >= 13)
+                                    {
+                                        // End of species declarations
+                                        if (reader.GetString(0) == null)
+                                        {
+                                            break;
+                                        }
+                                        // Species was counted
+                                        if (reader.GetDouble(9) > 0)
+                                        {
+                                            string optiCountTaxonomy = reader.GetString(0);
+                                            string optiCountSpecies = reader.GetString(1);
+                                            Double concentration = reader.GetDouble(12);
+                                            Double biovolume = reader.GetDouble(13);
+                                            Double freshweight = reader.GetDouble(14);
+                                            PhytoPlankton phyto = new PhytoPlankton(optiCountTaxonomy, optiCountSpecies, concentration, biovolume, freshweight);
+
+                                            phytoSample.AddPhyto(phyto);
+                                        }
+                                    }
+
+                                    rowNum++;
+                                }
+                            } while (reader.NextResult());
+                        }
+                    }
+                }
             }
+            else if (zooradiobutton.IsChecked == true)
+            {
+                List<ExportedZooSample> exportedSample = new List<ExportedZooSample>();
+            }
+            
         }
     }
 }

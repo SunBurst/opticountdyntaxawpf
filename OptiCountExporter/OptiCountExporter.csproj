@@ -77,10 +77,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
+    <Compile Include="ExportedPhytoSample.cs" />
+    <Compile Include="ExportedSample.cs" />
+    <Compile Include="ExportedZooSample.cs" />
+    <Compile Include="PhytoPlankton.cs" />
+    <Compile Include="Plankton.cs" />
     <Compile Include="SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Sample.cs" />
+    <Compile Include="Zooplankton.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
