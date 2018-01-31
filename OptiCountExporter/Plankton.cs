@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OptiCountExporter
 {
@@ -27,22 +28,69 @@ namespace OptiCountExporter
             this.Concentration = concetration;
             this.Biovolume = biovolume;
             this.Freshweight = freshweight;
+            this.SpeciesFlags = new List<String>();
+            this.SpeciesComments = new List<String>();
         }
 
-
-        public void IdentifySpecies(List<String> flags, List<String> comments)
+        public virtual void IdentifySpecies(List<String> flags, List<String> comments)
         {
+            this.IdentifySpeciesFlags(flags);
+            this.IdentifySpeciesComments(comments);
+            this.IdentifySpeciesName();
+        }
 
+        public virtual void IdentifySpeciesName()
+        {
+            string[] allParts = this.OptiCountSpecies.Split();
+
+            int numOfFlagsAndComments = this.SpeciesFlags.Count + this.SpeciesComments.Count;
+            string[] nameParts = new string[allParts.Length - numOfFlagsAndComments];
+
+            int index = 0;
+            foreach (var part in allParts)
+            {
+                if (!(this.SpeciesFlags.Contains(part)) & !(this.SpeciesComments.Contains(part)))
+                {
+                    nameParts[index] = part;
+                    index++;
+                }
+            }
+
+            this.OptiCountSpecies = String.Join(" ", nameParts);
         }
 
         public void IdentifySpeciesFlags(List<String> flags)
         {
+            string[] allParts = this.OptiCountSpecies.Split();
+            foreach (var flag in flags)
+            {
+                if (allParts.Contains(flag))
+                {
+                    this.SpeciesFlags.Add(flag);
+                }
+            }
+        }
+
+        public void IdentifySpeciesComments(List<String> comments)
+        {
+            string[] allParts = this.OptiCountSpecies.Split();
+            foreach (var comment in comments)
+            {
+                if (allParts.Contains(comment))
+                {
+                    this.SpeciesComments.Add(comment);
+                }
+            }
+        }
+
+        public void DyntaxaMatch()
+        {
 
         }
 
-        public void IdentifyCommentsFlags(List<String> comments)
+        public override string ToString()
         {
-
+            return "Taxonomy: " + this.OptiCountTaxonomy + " Species: " + this.OptiCountSpecies + " Flags: " + String.Join(" ", this.SpeciesFlags) + " Comments: " + String.Join(" ", this.SpeciesComments);
         }
 
     }

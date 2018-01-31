@@ -20,5 +20,13 @@ namespace OptiCountExporter
             this.exportedSamples.Add(phyto);
         }
 
+        public void PrintSamples()
+        {
+            foreach (var sample in this.exportedSamples)
+            {
+                Console.WriteLine(sample);
+            }
+        }
+
     }
 }

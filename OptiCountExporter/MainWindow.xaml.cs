@@ -306,7 +306,9 @@ namespace OptiCountExporter
 
         private void ExportSamples(object sender, RoutedEventArgs e)
         {
-            
+
+            List<string> flags = new List<string> { "cf", "sp", "spp" };
+            List<string> comments = new List<string> { "avl", "rund", "enstaka", "oval", "runda", "koloni", "i", "gele", "ovala" };
             if (phytoradiobutton.IsChecked == true)
             {
                 List<ExportedPhytoSample> exportedSamples = new List<ExportedPhytoSample>();
@@ -338,13 +340,13 @@ namespace OptiCountExporter
                                         // Species was counted
                                         if (reader.GetDouble(9) > 0)
                                         {
-                                            string optiCountTaxonomy = reader.GetString(0);
-                                            string optiCountSpecies = reader.GetString(1);
+                                            string optiCountSpecies = reader.GetString(0);
+                                            string optiCountTaxonomy = reader.GetString(1);
                                             Double concentration = reader.GetDouble(12);
                                             Double biovolume = reader.GetDouble(13);
                                             Double freshweight = reader.GetDouble(14);
                                             PhytoPlankton phyto = new PhytoPlankton(optiCountTaxonomy, optiCountSpecies, concentration, biovolume, freshweight);
-
+                                            phyto.IdentifySpecies(flags, comments);
                                             phytoSample.AddPhyto(phyto);
                                         }
                                     }
@@ -354,7 +356,13 @@ namespace OptiCountExporter
                             } while (reader.NextResult());
                         }
                     }
+                    exportedSamples.Add(phytoSample);
                 }
+                foreach (var sample in exportedSamples)
+                {
+                    sample.PrintSamples();
+                }
+
             }
             else if (zooradiobutton.IsChecked == true)
             {
