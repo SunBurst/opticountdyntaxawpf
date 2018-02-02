@@ -18,8 +18,9 @@ namespace OptiCountExporter
             this.SpeciesMinAndMax = new List<String>();
         }
 
-        public override void IdentifySpecies(List<String> flags, List<String> comments)
+        public override void IdentifySpecies(List<String> flags, List<String> comments, List<String> ignores)
         {
+            this.IdentifyIgnores(ignores);
             this.IdentifySpeciesFlags(flags);
             this.IdentifySpeciesComments(comments);
             this.IdentifySpeciesOperators();
@@ -231,6 +232,15 @@ namespace OptiCountExporter
                         }
                         this.SpeciesMinAndMax.Add(part);
                     }
+                }
+
+                int partNum;
+                if (Int32.TryParse(part, out partNum) & (!(allParts.Contains("<"))) & (!(allParts.Contains(">"))) & (!(allParts.Contains("-"))))
+                {
+                    // Number but no operator found in parts
+                    this.MinSize = partNum;
+                    this.MaxSize = partNum;
+                    this.SpeciesMinAndMax.Add(part);
                 }
             }
         }

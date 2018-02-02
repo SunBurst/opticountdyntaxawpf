@@ -1,10 +1,12 @@
-﻿using ArtDatabanken.Data;
+﻿using ArtDatabanken;
+using ArtDatabanken.Data;
 using ArtDatabanken.WebService.Client.AnalysisService;
 using ArtDatabanken.WebService.Client.ReferenceService;
 using ArtDatabanken.WebService.Client.TaxonAttributeService;
 using ArtDatabanken.WebService.Client.TaxonService;
 using ArtDatabanken.WebService.Client.UserService;
-
+using System;
+using System.Collections.Generic;
 
 namespace OptiCountExporter
 {
@@ -35,14 +37,41 @@ namespace OptiCountExporter
             return userContext;
         }
 
-        public TaxonList searchTaxa(string searchString)
+        public TaxonNameList searchTaxa(string searchString)
         {
-            ITaxonSearchCriteria taxonSearchCriteria = new TaxonSearchCriteria();
-            taxonSearchCriteria.IsValidTaxon = true;
-            taxonSearchCriteria.TaxonNameSearchString = searchString;
-            TaxonList taxa = CoreData.TaxonManager.GetTaxa(userContext, taxonSearchCriteria);
+            ITaxonNameSearchCriteria searchCriteria;
+            TaxonNameList taxonNames;
+            ITaxonTreeNode taxonTreeNode = null;
 
-            return taxa;
+            searchCriteria = new TaxonNameSearchCriteria();
+
+            // Begränsa sökningen till vetenskapliga namn.
+            searchCriteria.Category = CoreData.TaxonManager.GetTaxonNameCategory(getUserContext(), (Int32)(TaxonNameCategoryId.ScientificName));
+
+            // Begränsa sökningen till giltiga namn och taxa.
+            searchCriteria.IsValidTaxon = true;
+            searchCriteria.IsValidTaxonName = true;
+
+            // Ange söksträng.
+            searchCriteria.NameSearchString = new StringSearchCriteria();
+            searchCriteria.NameSearchString.SearchString = searchString;
+
+            // Tala om hur söksträngen ska matchas mot de vetenskapliga namnen.
+            // Om mer än en operator anges så provas de en i taget tills minst en träff fås.
+            searchCriteria.NameSearchString.CompareOperators = new List<StringCompareOperator>();
+            searchCriteria.NameSearchString.CompareOperators.Add(StringCompareOperator.Equal);
+            taxonNames = CoreData.TaxonManager.GetTaxonNames(getUserContext(), searchCriteria);
+            //if (taxonNames.IsNotEmpty() && taxonNames.Count == 1)
+            //{
+                // Hämta föräldraträdet.
+                // TaxonTreeNode pekar på taxonNames[0].Taxon så det gäller
+                // att gå upp i trädet via taxonTreeNode.Parents för att få
+                // information om föräldrarna.
+                taxonTreeNode = taxonNames[0].Taxon.GetParentTaxonTree(getUserContext(), true);
+            //}
+            // else. Hantera problemet om sökningen gav noll eller flera träffar.
+
+            return taxonNames;
         }
 
     }

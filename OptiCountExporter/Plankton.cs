@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArtDatabanken.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +21,7 @@ namespace OptiCountExporter
         protected Double Freshweight { get; set; }
         protected List<String> SpeciesFlags { get; set; }
         protected List<String> SpeciesComments { get; set; }
+        protected List<String> SpeciesIgnores { get; set; }
 
         public Plankton(string optiCountTaxonomy, string optiCountSpecies, Double concetration, Double biovolume, Double freshweight)
         {
@@ -30,10 +32,12 @@ namespace OptiCountExporter
             this.Freshweight = freshweight;
             this.SpeciesFlags = new List<String>();
             this.SpeciesComments = new List<String>();
+            this.SpeciesIgnores = new List<String>();
         }
 
-        public virtual void IdentifySpecies(List<String> flags, List<String> comments)
+        public virtual void IdentifySpecies(List<String> flags, List<String> comments, List<String> ignores)
         {
+            this.IdentifyIgnores(ignores);
             this.IdentifySpeciesFlags(flags);
             this.IdentifySpeciesComments(comments);
             this.IdentifySpeciesName();
@@ -83,14 +87,47 @@ namespace OptiCountExporter
             }
         }
 
-        public void DyntaxaMatch()
+        public void IdentifyIgnores(List<String> ignores)
         {
+            string[] allParts = this.OptiCountSpecies.Split();
+            foreach (var ignore in ignores)
+            {
+                if (allParts.Contains(ignore))
+                {
+                    this.SpeciesIgnores.Add(ignore);
+                }
+            }
 
+            string[] newAllParts = new string[allParts.Length - this.SpeciesIgnores.Count];
+            for (int i = 0, j = 0; i < allParts.Length; i++)
+            {
+                if (!(this.SpeciesIgnores.Contains(allParts[i])))
+                {
+                    newAllParts[j] = allParts[i];
+                    j++;
+                }
+            }
+
+            this.OptiCountSpecies = string.Join(" ", newAllParts);
+        }
+
+        public void DyntaxaMatch(DyntaxaService session)
+        {
+            ITaxonTreeNode result = session.searchTaxa(this.OptiCountSpecies);
+            Console.WriteLine("Trying to match: " + this.OptiCountSpecies);
+            if (result != null)
+            {
+                Console.WriteLine("Taxon: " + result.Taxon.ScientificName);
+            }
+            else
+            {
+                Console.WriteLine("No match! :(");
+            }
         }
 
         public override string ToString()
         {
-            return "Taxonomy: " + this.OptiCountTaxonomy + " Species: " + this.OptiCountSpecies + " Flags: " + String.Join(" ", this.SpeciesFlags) + " Comments: " + String.Join(" ", this.SpeciesComments);
+            return "Taxonomy: " + this.OptiCountTaxonomy + " Species: " + this.OptiCountSpecies + " Ignores: " + String.Join(" ", this.SpeciesIgnores) +  " Flags: " + String.Join(" ", this.SpeciesFlags) + " Comments: " + String.Join(" ", this.SpeciesComments);
         }
 
     }

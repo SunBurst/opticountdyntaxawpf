@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 
 namespace OptiCountExporter
 {
-    class GlobalVariables
+    public static class GlobalVariables
     {
-        public static bool setupDyntaxaService()
+        public static DyntaxaService setupDyntaxaService()
         {
-            System.Diagnostics.Debug.WriteLine(ConfigurationManager.AppSettings);
             string userName = ConfigurationManager.AppSettings["userName"];
             string password = ConfigurationManager.AppSettings["password"];
             string appId = ConfigurationManager.AppSettings["appId"];
-            DyntaxaService dyntaxaService = new DyntaxaService(userName, password, appId);
-            if (dyntaxaService.getUserContext() != null)
-                return true;
-            return false;
+
+            return new DyntaxaService(userName, password, appId);
+            
+            //if (dyntaxaService.getUserContext() != null)
+            //    return true;
+            //return false;
 
         }
     }

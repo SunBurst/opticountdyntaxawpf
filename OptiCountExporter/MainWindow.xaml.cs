@@ -14,13 +14,25 @@ namespace OptiCountExporter
     /// </summary>
     public partial class MainWindow : Window
     {
-
         private static ObservableCollection<Sample> items = new ObservableCollection<Sample>();
+        private static DyntaxaService session;
 
+        # region Constructor
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
-            bool connected = GlobalVariables.setupDyntaxaService();
+            this.DataContext = 
+
+            session = GlobalVariables.setupDyntaxaService();
+            bool connected = false;
+            if (session.getUserContext() != null)
+            {
+                connected = true;
+            }
             if (connected)
             {
                 connectionStatusIcon.Fill = System.Windows.Media.Brushes.Green;
@@ -308,7 +320,13 @@ namespace OptiCountExporter
         {
 
             List<string> flags = new List<string> { "cf", "sp", "spp" };
-            List<string> comments = new List<string> { "avl", "rund", "enstaka", "oval", "runda", "koloni", "i", "gele", "ovala" };
+            List<string> comments = new List<string> {
+                "avl", "rund", "enstaka", "oval", "runda", "koloni",
+                "i", "gele", "ovala", "filament", "gelé", "med", "flagell",
+                "stjärnformad", "bandkoloni", "klyftform", "långsmal",
+                "gissel"
+            };
+            List<string> ignores = new List<string> { "um" };
             if (phytoradiobutton.IsChecked == true)
             {
                 List<ExportedPhytoSample> exportedSamples = new List<ExportedPhytoSample>();
@@ -346,7 +364,8 @@ namespace OptiCountExporter
                                             Double biovolume = reader.GetDouble(13);
                                             Double freshweight = reader.GetDouble(14);
                                             PhytoPlankton phyto = new PhytoPlankton(optiCountTaxonomy, optiCountSpecies, concentration, biovolume, freshweight);
-                                            phyto.IdentifySpecies(flags, comments);
+                                            phyto.IdentifySpecies(flags, comments, ignores);
+                                            phyto.DyntaxaMatch(session);
                                             phytoSample.AddPhyto(phyto);
                                         }
                                     }
