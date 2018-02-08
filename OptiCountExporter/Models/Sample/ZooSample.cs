@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace OptiCountExporter
 {
-    class ExportedZooSample : ExportedSample
+    class ZooSample : Sample
     {
-        protected List<ZooPlankton> exportedSamples { get; set; }
+        private List<ZooPlankton> exportedSamples { get; set; }
 
-        public ExportedZooSample()
+        public ZooSample()
         {
             exportedSamples = new List<ZooPlankton>();
         }

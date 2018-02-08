@@ -67,7 +67,7 @@ namespace OptiCountExporter
                 // TaxonTreeNode pekar på taxonNames[0].Taxon så det gäller
                 // att gå upp i trädet via taxonTreeNode.Parents för att få
                 // information om föräldrarna.
-                taxonTreeNode = taxonNames[0].Taxon.GetParentTaxonTree(getUserContext(), true);
+                //taxonTreeNode = taxonNames[0].Taxon.GetParentTaxonTree(getUserContext(), true);
             //}
             // else. Hantera problemet om sökningen gav noll eller flera träffar.
 

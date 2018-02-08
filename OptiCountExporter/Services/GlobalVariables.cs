@@ -9,18 +9,13 @@ namespace OptiCountExporter
 {
     public static class GlobalVariables
     {
-        public static DyntaxaService setupDyntaxaService()
+        public static DyntaxaService SetupDyntaxaService()
         {
             string userName = ConfigurationManager.AppSettings["userName"];
             string password = ConfigurationManager.AppSettings["password"];
             string appId = ConfigurationManager.AppSettings["appId"];
 
             return new DyntaxaService(userName, password, appId);
-            
-            //if (dyntaxaService.getUserContext() != null)
-            //    return true;
-            //return false;
-
         }
     }
 }

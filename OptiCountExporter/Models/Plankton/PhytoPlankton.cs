@@ -8,28 +8,28 @@ namespace OptiCountExporter
 {
     public class PhytoPlankton : Plankton
     {
-        protected int MinSize { get; set; }
-        protected int MaxSize { get; set; }
+        protected int TaxonMinSize { get; set; }
+        protected int TaxonMaxSize { get; set; }
         protected List<String> SpeciesMinAndMax;
 
-        public PhytoPlankton(string optiCountTaxonomy, string optiCountSpecies, Double concetration, Double biovolume, Double freshweight)
-            : base(optiCountTaxonomy, optiCountSpecies, concetration, biovolume, freshweight)
+        public PhytoPlankton(string taxonSpecies, Double concetration, Double biovolume, Double freshweight)
+            : base(taxonSpecies, concetration, biovolume, freshweight)
         {
             this.SpeciesMinAndMax = new List<String>();
         }
 
-        public override void IdentifySpecies(List<String> flags, List<String> comments, List<String> ignores)
+        public override void CleanTaxonSpecies(List<String> flags, List<String> comments, List<String> ignores)
         {
             this.IdentifyIgnores(ignores);
             this.IdentifySpeciesFlags(flags);
             this.IdentifySpeciesComments(comments);
             this.IdentifySpeciesOperators();
-            this.IdentifySpeciesName();
+            this.ExtractTaxonSpecies();
         }
 
         public void IdentifySpeciesOperators()
         {
-            string[] allParts = this.OptiCountSpecies.Split();
+            string[] allParts = this.TaxonSpecies.Split();
             foreach (var part in allParts)
             {
                 if (part.Contains('<'))
@@ -46,7 +46,7 @@ namespace OptiCountExporter
                             success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MaxSize = number;
+                                this.TaxonMaxSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                                 this.SpeciesMinAndMax.Add(numberString);
                             }
@@ -59,7 +59,7 @@ namespace OptiCountExporter
                                 success = Int32.TryParse(numberString, out number);
                                 if (success)
                                 {
-                                    this.MinSize = number;
+                                    this.TaxonMinSize = number;
                                     this.SpeciesMinAndMax.Add(numberString);
                                     this.SpeciesMinAndMax.Add(part);
                                 }
@@ -80,7 +80,7 @@ namespace OptiCountExporter
                             bool success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MaxSize = number;
+                                this.TaxonMaxSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                             }
                             
@@ -92,7 +92,7 @@ namespace OptiCountExporter
                             bool success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MinSize = number;
+                                this.TaxonMinSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                             }
                         }
@@ -116,7 +116,7 @@ namespace OptiCountExporter
                             success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MinSize = number;
+                                this.TaxonMinSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                                 this.SpeciesMinAndMax.Add(numberString);
                             }
@@ -129,7 +129,7 @@ namespace OptiCountExporter
                                 success = Int32.TryParse(numberString, out number);
                                 if (success)
                                 {
-                                    this.MaxSize = number;
+                                    this.TaxonMaxSize = number;
                                     this.SpeciesMinAndMax.Add(numberString);
                                     this.SpeciesMinAndMax.Add(part);
                                 }
@@ -149,7 +149,7 @@ namespace OptiCountExporter
                             bool success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MinSize = number;
+                                this.TaxonMinSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                             }
 
@@ -161,7 +161,7 @@ namespace OptiCountExporter
                             bool success = Int32.TryParse(numberString, out number);
                             if (success)
                             {
-                                this.MaxSize = number;
+                                this.TaxonMaxSize = number;
                                 this.SpeciesMinAndMax.Add(part);
                             }
                         }
@@ -185,7 +185,7 @@ namespace OptiCountExporter
                             success = Int32.TryParse(secondNumberString, out secondNumber);
                             if (success)
                             {
-                                this.MaxSize = secondNumber;
+                                this.TaxonMaxSize = secondNumber;
                                 this.SpeciesMinAndMax.Add(part);
                                 this.SpeciesMinAndMax.Add(secondNumberString);
                             }
@@ -196,7 +196,7 @@ namespace OptiCountExporter
                                 success = Int32.TryParse(firstNumberString, out firstNumber);
                                 if (success)
                                 {
-                                    this.MinSize = firstNumber;
+                                    this.TaxonMinSize = firstNumber;
                                     this.SpeciesMinAndMax.Add(firstNumberString);
                                     this.SpeciesMinAndMax.Add(part);
                                 }
@@ -222,13 +222,13 @@ namespace OptiCountExporter
                         success = Int32.TryParse(firstNumberString, out firstNumber);
                         if (success)
                         {
-                            this.MinSize = firstNumber;
+                            this.TaxonMinSize = firstNumber;
                         }
 
                         success = Int32.TryParse(secondNumberString, out secondNumber);
                         if (success)
                         {
-                            this.MaxSize = secondNumber;
+                            this.TaxonMaxSize = secondNumber;
                         }
                         this.SpeciesMinAndMax.Add(part);
                     }
@@ -238,36 +238,36 @@ namespace OptiCountExporter
                 if (Int32.TryParse(part, out partNum) & (!(allParts.Contains("<"))) & (!(allParts.Contains(">"))) & (!(allParts.Contains("-"))))
                 {
                     // Number but no operator found in parts
-                    this.MinSize = partNum;
-                    this.MaxSize = partNum;
+                    this.TaxonMinSize = partNum;
+                    this.TaxonMaxSize = partNum;
                     this.SpeciesMinAndMax.Add(part);
                 }
             }
         }
 
-        public override void IdentifySpeciesName()
+        public override void ExtractTaxonSpecies()
         {
-            string[] allParts = this.OptiCountSpecies.Split();
+            string[] allParts = this.TaxonSpecies.Split();
 
-            int numOfFlagsCommentsAndMinMax = this.SpeciesFlags.Count + this.SpeciesComments.Count + this.SpeciesMinAndMax.Count;
+            int numOfFlagsCommentsAndMinMax = this.TaxonSpeciesFlags.Count + this.TaxonSpeciesComments.Count + this.SpeciesMinAndMax.Count;
             string[] nameParts = new string[allParts.Length - numOfFlagsCommentsAndMinMax];
 
             int index = 0;
             foreach (var part in allParts)
             {
-                if (!(this.SpeciesFlags.Contains(part)) & !(this.SpeciesComments.Contains(part)) &!(this.SpeciesMinAndMax.Contains(part)))
+                if (!(this.TaxonSpeciesFlags.Contains(part)) & !(this.TaxonSpeciesComments.Contains(part)) &!(this.SpeciesMinAndMax.Contains(part)))
                 {
                     nameParts[index] = part;
                     index++;
                 }
             }
 
-            this.OptiCountSpecies = String.Join(" ", nameParts);
+            this.TaxonSpecies = String.Join(" ", nameParts);
         }
 
         public override string ToString()
         {
-            return base.ToString() + " Min: " + this.MinSize + " Max: " + this.MaxSize;
+            return $"{ base.ToString()} Min: {this.TaxonMinSize} Max: {this.TaxonMaxSize}";
         }
 
     }
