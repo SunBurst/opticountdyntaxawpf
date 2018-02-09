@@ -12,17 +12,28 @@
                 <Button IsCancel="True" Command="{Binding CancelCommand}" Padding="12,6">Cancel</Button>
             </StackPanel>
             <TextBlock Text="{Binding Message, FallbackValue='DIALOG_MESSAGE'}" VerticalAlignment="Center" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
-            <TextBox DockPanel.Dock="Top" Text="{Binding Search}"></TextBox>
-            <ListView ItemsSource="{Binding Result}">
+            <Grid DockPanel.Dock="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="357*"/>
+                    <ColumnDefinition Width="274*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Margin="10" Grid.Column="0" Text="{Binding SearchText, Mode=TwoWay}" Grid.ColumnSpan="2"></TextBox>
+                <Button Margin="10" Grid.Column="2" Command="{Binding SearchCommand}">Search</Button>
+            </Grid>
+            <ListView ItemsSource="{Binding Result}" SelectedItem="{Binding SelectedPlankton}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Species" Width="100" DisplayMemberBinding="{Binding Taxon.ScientificName}" />
-                        <GridViewColumn Header="Dyntaxa ID" Width="100" DisplayMemberBinding="{Binding Taxon.Id}" />
-                        <!--<GridViewColumn Header="Phylum" Width="100" DisplayMemberBinding="{Binding Phylum}" />
-                        <GridViewColumn Header="Class" Width="100" DisplayMemberBinding="{Binding Class}" />
-                        <GridViewColumn Header="Order" Width="100" DisplayMemberBinding="{Binding Order}" />
-                        <GridViewColumn Header="Family" Width="100" DisplayMemberBinding="{Binding Family}" />
-                        <GridViewColumn Header="Genus" Width="100" DisplayMemberBinding="{Binding Genus}" /> -->
+                        <GridViewColumn Header="Species" Width="100" DisplayMemberBinding="{Binding TaxonSpecies}" />
+                        <GridViewColumn Header="Dyntaxa ID" Width="100" DisplayMemberBinding="{Binding TaxonDyntaxaID}" />
+                        <GridViewColumn Header="Phylum" Width="100" DisplayMemberBinding="{Binding TaxonPhylum}" />
+                        <GridViewColumn Header="Class" Width="100" DisplayMemberBinding="{Binding TaxonClass}" />
+                        <GridViewColumn Header="Order" Width="100" DisplayMemberBinding="{Binding TaxonOrder}" />
+                        <GridViewColumn Header="Family" Width="100" DisplayMemberBinding="{Binding TaxonFamily}" />
+                        <GridViewColumn Header="Genus" Width="100" DisplayMemberBinding="{Binding TaxonGenus}" />
                     </GridView>
                 </ListView.View>
             </ListView>

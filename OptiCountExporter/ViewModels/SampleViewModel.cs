@@ -68,23 +68,95 @@ namespace OptiCountExporter
             this.dialogService = dialogService;
         }
 
-        private void DisplayMatchMessage(string taxonSearch, TaxonNameList matchingResult)
+        private Plankton GetUserSelectedPlankton(string taxonSearch, TaxonNameList matchingResult)
         {
             var viewModel = new DyntaxaMatchingDialogViewModel($"Found {matchingResult.Count} matches when searching for species: {taxonSearch}", taxonSearch, matchingResult);
-
+            Plankton plankton = null;
             bool? result = dialogService.ShowDialog(viewModel);
 
             if (result.HasValue)
             {
                 if (result.Value)
                 {
-                    // Accepted
+                    plankton = viewModel.SelectedPlankton;
                 }
                 else
                 {
                     // Cancelled
                 }
             }
+            return plankton;
+        }
+
+        private Plankton IdentifyPlankton(string searchText)
+        {
+            Plankton plankton = new Plankton();
+            TaxonNameList result = this.DyntaxaSession.searchTaxa(searchText);
+            if (result.IsNotEmpty())
+            {
+                if (result.Count == 1)
+                {
+                    ITaxonTreeNode taxonTreeNode = result[0].Taxon.GetParentTaxonTree(this.DyntaxaSession.getUserContext(), true);
+                    while (taxonTreeNode != null)
+                    {
+                        string categoryName = taxonTreeNode.Taxon.Category.Name;
+                        switch (categoryName)
+                        {
+                            case "Species":
+                                plankton.TaxonSpecies = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Genus":
+                                plankton.TaxonGenus = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Class":
+                                plankton.TaxonClass = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Family":
+                                plankton.TaxonFamily = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Order":
+                                plankton.TaxonOrder = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Phylum":
+                                plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            case "Organism group":
+                                plankton.TaxonOrganismGroup = taxonTreeNode.Taxon.ScientificName;
+                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                                break;
+                            default: break;
+                        }
+                        if (taxonTreeNode.Parents == null)
+                        {
+                            break;
+                        }
+                        taxonTreeNode = taxonTreeNode.Parents[0];
+                    }
+                }
+                else
+                {
+                    plankton = this.GetUserSelectedPlankton(searchText, result);
+                }
+            }
+            else
+            {
+                plankton = this.GetUserSelectedPlankton(searchText, result);
+            }
+            return plankton;
+
         }
 
         public void AddFiles(string[] files)
@@ -275,23 +347,8 @@ namespace OptiCountExporter
                                             Double freshweight = reader.GetDouble(14);
                                             PhytoPlankton phyto = new PhytoPlankton(taxonSpecies, concentration, biovolume, freshweight);
                                             phyto.CleanTaxonSpecies(flags, comments, ignores);
-                                            TaxonNameList result = this.DyntaxaSession.searchTaxa(phyto.TaxonSpecies);
-                                            if (result.IsNotEmpty())
-                                            {
-                                                if (result.Count == 1)
-                                                {
-                                                    // do nothing
-                                                }
-                                                else
-                                                {
-                                                    this.DisplayMatchMessage(phyto.TaxonSpecies, result);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                this.DisplayMatchMessage(phyto.TaxonSpecies, result);
-                                            }
-                                            //phyto.DyntaxaMatch(this.DyntaxaSession);
+                                            string newTaxonSpecies = phyto.TaxonSpecies;
+                                            PhytoPlankton newPhyto = (PhytoPlankton) IdentifyPlankton(newTaxonSpecies);
                                             phytoSample.AddPhyto(phyto);
                                         }
                                     }

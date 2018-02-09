@@ -41,7 +41,6 @@ namespace OptiCountExporter
         {
             ITaxonNameSearchCriteria searchCriteria;
             TaxonNameList taxonNames;
-            ITaxonTreeNode taxonTreeNode = null;
 
             searchCriteria = new TaxonNameSearchCriteria();
 

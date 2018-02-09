@@ -80,7 +80,12 @@
       <DependentUpon>DyntaxaSearchDialogWindow .xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\ActionCommand.cs" />
+    <Compile Include="Services\DialogCloseRequestedEventArgs.cs" />
+    <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\IDialog.cs" />
+    <Compile Include="Services\IDialogRequestClose.cs" />
+    <Compile Include="Services\IDialogService.cs" />
+    <Compile Include="ViewModels\Base\RelayCommand.cs" />
     <Compile Include="ViewModels\DialogViewModel.cs" />
     <Compile Include="ViewModels\DyntaxaMatchingDialogViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
