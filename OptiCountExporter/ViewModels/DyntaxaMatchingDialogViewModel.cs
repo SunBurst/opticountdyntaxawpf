@@ -1,18 +1,47 @@
 ﻿using ArtDatabanken.Data;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace OptiCountExporter
 {
-    public class DyntaxaMatchingDialogViewModel : DialogViewModel
+    public class DyntaxaMatchingDialogViewModel : DialogViewModel, IDialogRequestClose
     {
-        #region Public Properies
+        #region Private Properties
 
+        private ICommand okCommand;
+        public ICommand CancelCommand { get; }
+        private bool canExecute = false;
+        private Plankton selectedPlankton = null;
+
+        #endregion
+
+        #region Public Properties
+
+        public event EventHandler<DialogCloseRequestedEventArgs> CloseRequested;
         public ICommand SearchCommand { get; set; }
         public ObservableCollection<Plankton> Result { get; set; }
-        public Plankton SelectedPlankton { get; set; }
         public string SearchText { get; set; }
+        public Plankton SelectedPlankton
+        {
+            get
+            {
+                return this.selectedPlankton;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    CanExecute = false;
+                }
+                else
+                {
+                    CanExecute = true;
+                }
+                this.selectedPlankton = value;
+            }
+        }
 
         #endregion
 
@@ -22,9 +51,41 @@ namespace OptiCountExporter
             Result = new ObservableCollection<Plankton>();
             this.UpdateCollection(search);
             this.SearchCommand = new RelayCommand(Search);
+            this.OkCommand = new ActionCommand(p => CloseRequested?.Invoke(this, new DialogCloseRequestedEventArgs(true)), param => this.canExecute);
+            this.CancelCommand = new ActionCommand(p => CloseRequested?.Invoke(this, new DialogCloseRequestedEventArgs(false)));
         }
 
-        private void Search()
+        public bool CanExecute
+        {
+            get
+            {
+                return this.canExecute;
+            }
+
+            set
+            {
+                if (this.canExecute == value)
+                {
+                    return;
+                }
+
+                this.canExecute = value;
+            }
+        }
+
+        public ICommand OkCommand
+        {
+            get
+            {
+                return this.okCommand;
+            }
+            set
+            {
+                this.okCommand = value;
+            }
+        }
+
+        private void Search(object obj)
         {
             TaxonNameList newSearch = this.DyntaxaSession.searchTaxa(SearchText);
             int numOfResults = newSearch.Count;
@@ -35,58 +96,9 @@ namespace OptiCountExporter
         private void UpdateCollection(TaxonNameList search)
         {
             Result.Clear();
-            foreach (TaxonName match in search)
+            List<Plankton> resultList = this.DyntaxaSession.MakePlanktonList(search);
+            foreach (Plankton plankton in resultList)
             {
-                Plankton plankton = new Plankton();
-                ITaxonTreeNode taxonTreeNode = match.Taxon.GetParentTaxonTree(this.DyntaxaSession.getUserContext(), true);
-                while (taxonTreeNode != null)
-                {
-                    string categoryName = taxonTreeNode.Taxon.Category.Name;
-                    switch (categoryName)
-                    {
-                        case "Species":
-                            plankton.TaxonSpecies = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Genus":
-                            plankton.TaxonGenus = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Class":
-                            plankton.TaxonClass = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Family":
-                            plankton.TaxonFamily = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Order":
-                            plankton.TaxonOrder = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Phylum":
-                            plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        case "Organism group":
-                            plankton.TaxonOrganismGroup = taxonTreeNode.Taxon.ScientificName;
-                            if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                            break;
-                        default: break;
-                    }
-                    if (taxonTreeNode.Parents == null)
-                    {
-                        break;
-                    }
-                    taxonTreeNode = taxonTreeNode.Parents[0];
-                }
                 Result.Add(plankton);
             }
         }

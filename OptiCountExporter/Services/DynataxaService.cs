@@ -37,6 +37,55 @@ namespace OptiCountExporter
             return userContext;
         }
 
+        public List<Plankton> MakePlanktonList(TaxonNameList search)
+        {
+            List<Plankton> planktonList = new List<Plankton>();
+            foreach (TaxonName match in search)
+            {
+                Plankton plankton = new Plankton();
+                ITaxonTreeNode taxonTreeNode = match.Taxon.GetParentTaxonTree(this.getUserContext(), true);
+                while (taxonTreeNode != null)
+                {
+                    string categoryName = taxonTreeNode.Taxon.Category.Name;
+                    if (!(plankton.TaxonDyntaxaIDIsInitialized))
+                        plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
+                    switch (categoryName)
+                    {
+                        case "Species":
+                            plankton.TaxonSpecies = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Genus":
+                            plankton.TaxonGenus = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Class":
+                            plankton.TaxonClass = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Family":
+                            plankton.TaxonFamily = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Order":
+                            plankton.TaxonOrder = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Phylum":
+                            plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        case "Organism group":
+                            plankton.TaxonOrganismGroup = taxonTreeNode.Taxon.ScientificName;
+                            break;
+                        default: break;
+                    }
+                    if (taxonTreeNode.Parents == null)
+                    {
+                        break;
+                    }
+                    taxonTreeNode = taxonTreeNode.Parents[0];
+                }
+                planktonList.Add(plankton);
+            }
+
+            return planktonList;
+        }
+
         public TaxonNameList searchTaxa(string searchString)
         {
             ITaxonNameSearchCriteria searchCriteria;

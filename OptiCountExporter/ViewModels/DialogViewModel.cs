@@ -15,7 +15,7 @@
         }
 
         public event EventHandler<DialogCloseRequestedEventArgs> CloseRequested;
-        public ICommand OkCommand { get; }
+        public ICommand OkCommand { get;  }
         public ICommand CancelCommand { get; }
         public string Message
         {

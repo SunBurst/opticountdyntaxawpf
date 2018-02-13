@@ -49,6 +49,9 @@
     <Reference Include="ArtDatabanken.WebService.Proxy">
       <HintPath>libs\ArtDatabankenSOAClientCodeDotNet35\ArtDatabanken.WebService.Proxy.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="ExcelDataReader, Version=3.3.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.3.0\lib\net45\ExcelDataReader.dll</HintPath>
     </Reference>
@@ -90,15 +93,11 @@
     <Compile Include="ViewModels\DyntaxaMatchingDialogViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
-    <Compile Include="Models\Sample\PhytoSample.cs" />
-    <Compile Include="Models\Sample\ZooSample.cs" />
-    <Compile Include="Models\Plankton\PhytoPlankton.cs" />
     <Compile Include="Models\Plankton\Plankton.cs" />
     <Compile Include="Models\Sample\Sample.cs" />
     <Compile Include="SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Plankton\Zooplankton.cs" />
     <Compile Include="ViewModels\Base\BaseViewModel.cs" />
     <Compile Include="ViewModels\SampleViewModel.cs" />
     <Compile Include="DialogWindow.xaml.cs">

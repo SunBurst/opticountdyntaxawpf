@@ -1,6 +1,7 @@
 ﻿using ArtDatabanken;
 using ArtDatabanken.Data;
 using ExcelDataReader;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -82,6 +83,7 @@ namespace OptiCountExporter
                 }
                 else
                 {
+                    plankton = new Plankton(taxonSearch);
                     // Cancelled
                 }
             }
@@ -96,54 +98,15 @@ namespace OptiCountExporter
             {
                 if (result.Count == 1)
                 {
-                    ITaxonTreeNode taxonTreeNode = result[0].Taxon.GetParentTaxonTree(this.DyntaxaSession.getUserContext(), true);
-                    while (taxonTreeNode != null)
+                    List<Plankton> resultList = this.DyntaxaSession.MakePlanktonList(result);
+
+                    try
                     {
-                        string categoryName = taxonTreeNode.Taxon.Category.Name;
-                        switch (categoryName)
-                        {
-                            case "Species":
-                                plankton.TaxonSpecies = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Genus":
-                                plankton.TaxonGenus = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Class":
-                                plankton.TaxonClass = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Family":
-                                plankton.TaxonFamily = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Order":
-                                plankton.TaxonOrder = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Phylum":
-                                plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            case "Organism group":
-                                plankton.TaxonOrganismGroup = taxonTreeNode.Taxon.ScientificName;
-                                if (!(plankton.TaxonDyntaxaIDIsInitialized))
-                                    plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
-                                break;
-                            default: break;
-                        }
-                        if (taxonTreeNode.Parents == null)
-                        {
-                            break;
-                        }
-                        taxonTreeNode = taxonTreeNode.Parents[0];
+                        plankton = resultList[0];
+                    }
+                    catch (IndexOutOfRangeException e)
+                    {
+                        Console.WriteLine(e);
                     }
                 }
                 else
@@ -264,7 +227,7 @@ namespace OptiCountExporter
                     }
                 }
 
-                this.Samples.Add(new PhytoSample() { Origin = origin, Date = date, FileName = fileName, FilePath = filePath });
+                this.Samples.Add(new Sample() { Origin = origin, Date = date, FileName = fileName, FilePath = filePath });
             }
         }
 
@@ -307,68 +270,156 @@ namespace OptiCountExporter
                 "avl", "rund", "enstaka", "oval", "runda", "koloni",
                 "i", "gele", "ovala", "filament", "gelé", "med", "flagell",
                 "stjärnformad", "bandkoloni", "klyftform", "långsmal",
-                "gissel"
+                "gissel", "copepodit", "adult", "naupliuslarv", "hanne",
+                "bentisk"
             };
             List<string> ignores = new List<string> { "um" };
-            if (this.PhytoSampleIsChecked == true)
-            {
-                List<PhytoSample> exportedSamples = new List<PhytoSample>();
 
-                foreach (var sample in this.Samples)
+            List<Sample> exportedSamples = new List<Sample>();
+
+            foreach (var inputSample in this.Samples)
+            {
+                using (var stream = File.Open(inputSample.FilePath, FileMode.Open, FileAccess.Read))
                 {
-                    PhytoSample phytoSample = new PhytoSample();
-                    using (var stream = File.Open(sample.FilePath, FileMode.Open, FileAccess.Read))
+                    // Auto-detect format, supports:
+                    //  - Binary Excel files (2.0-2003 format; *.xls)
+                    //  - OpenXml Excel files (2007 format; *.xlsx)
+                    using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
-
-                        // Auto-detect format, supports:
-                        //  - Binary Excel files (2.0-2003 format; *.xls)
-                        //  - OpenXml Excel files (2007 format; *.xlsx)
-                        using (var reader = ExcelReaderFactory.CreateReader(stream))
+                        do
                         {
-                            do
+                            int rowNum = 0;
+                            while (reader.Read())
                             {
-                                int rowNum = 0;
-                                while (reader.Read())
+                                // Start of species declarations
+                                if (rowNum >= 13)
                                 {
-                                    // Start of species declarations
-                                    if (rowNum >= 13)
+                                    // End of species declarations
+                                    if (reader.GetString(0) == null)
                                     {
-                                        // End of species declarations
-                                        if (reader.GetString(0) == null)
-                                        {
-                                            break;
-                                        }
-                                        // Species was counted
-                                        if (reader.GetDouble(9) > 0)
-                                        {
-                                            string taxonSpecies = reader.GetString(0);
-                                            Double concentration = reader.GetDouble(12);
-                                            Double biovolume = reader.GetDouble(13);
-                                            Double freshweight = reader.GetDouble(14);
-                                            PhytoPlankton phyto = new PhytoPlankton(taxonSpecies, concentration, biovolume, freshweight);
-                                            phyto.CleanTaxonSpecies(flags, comments, ignores);
-                                            string newTaxonSpecies = phyto.TaxonSpecies;
-                                            PhytoPlankton newPhyto = (PhytoPlankton) IdentifyPlankton(newTaxonSpecies);
-                                            phytoSample.AddPhyto(phyto);
-                                        }
+                                        break;
                                     }
-
-                                    rowNum++;
+                                    // Species was counted
+                                    if (reader.GetDouble(9) > 0)
+                                    {
+                                        string taxonSpecies = reader.GetString(0);
+                                        Double concentration = reader.GetDouble(12);
+                                        Double biovolume = reader.GetDouble(13);
+                                        Double freshweight = reader.GetDouble(14);
+                                        Plankton plankton = new Plankton(taxonSpecies, concentration, biovolume, freshweight);
+                                        plankton.CleanTaxonSpecies(flags, comments, ignores);
+                                        Plankton newPlankton = this.IdentifyPlankton(plankton.TaxonSpecies);
+                                        newPlankton.TaxonConcentration = plankton.TaxonConcentration;
+                                        newPlankton.TaxonBiovolume = plankton.TaxonBiovolume;
+                                        newPlankton.ConvertBiovolume(1e-9);
+                                        newPlankton.TaxonFreshweight = plankton.TaxonFreshweight;
+                                        newPlankton.TaxonMinSize = plankton.TaxonMinSize;
+                                        newPlankton.TaxonMaxSize = plankton.TaxonMaxSize;
+                                        newPlankton.TaxonSpeciesFlags = plankton.TaxonSpeciesFlags;
+                                        newPlankton.TaxonSpeciesComments = plankton.TaxonSpeciesComments;
+                                        newPlankton.TaxonSpeciesIgnores = plankton.TaxonSpeciesIgnores;
+                                        newPlankton.TaxonSpeciesMinAndMax = plankton.TaxonSpeciesMinAndMax;
+                                        inputSample.AddPlankton(newPlankton);
+                                    }
                                 }
-                            } while (reader.NextResult());
-                        }
-                    }
-                    exportedSamples.Add(phytoSample);
-                }
-                foreach (var sample in exportedSamples)
-                {
-                    sample.PrintSamples();
-                }
 
+                                rowNum++;
+                            }
+                        } while (reader.NextResult());
+                    }
+
+                    exportedSamples.Add(inputSample);
+                }
+                    
             }
-            else if (this.ZooSampleIsChecked == true)
+            foreach (Sample sample in exportedSamples)
             {
-                List<ZooSample> exportedSample = new List<ZooSample>();
+                string FileDir = Path.GetDirectoryName(sample.FilePath);
+                string FileName = Path.GetFileNameWithoutExtension(sample.FileName);
+                string FileExt = Path.GetExtension(sample.FileName);
+                string ExportedFullFileName = $"{FileName}_Exported{FileExt}";
+                string ExportedFilePath = Path.Combine(FileDir, ExportedFullFileName);
+
+                var newFile = new FileInfo(ExportedFilePath);
+                if (newFile.Exists)
+                {
+                    newFile.Delete();  // ensures we create a new workbook
+                    newFile = new FileInfo(ExportedFilePath);
+                }
+                using (var package = new ExcelPackage(newFile))
+                {
+                    // Add a new worksheet to the empty workbook
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Compilation");
+                    //Add the headers
+
+                    worksheet.Cells[1, 1].Value = "Origin";
+                    worksheet.Cells[1, 2].Value = "Date";
+                    worksheet.Cells[1, 3].Value = "Sample Number";
+                    worksheet.Cells[1, 4].Value = "Phylum";
+                    worksheet.Cells[1, 5].Value = "Class";
+                    worksheet.Cells[1, 6].Value = "Order";
+                    worksheet.Cells[1, 7].Value = "Species";
+                    worksheet.Cells[1, 8].Value = "Flags";
+                    if (this.phytoSampleIsChecked)
+                    {
+                        worksheet.Cells[1, 9].Value = "Min Size";
+                        worksheet.Cells[1, 10].Value = "Max Size";
+                        worksheet.Cells[1, 11].Value = "Comments";
+                        worksheet.Cells[1, 12].Value = "Dyntaxa ID";
+                        worksheet.Cells[1, 13].Value = "Concentration";
+                        worksheet.Cells[1, 14].Value = "Biovolume";
+                        worksheet.Cells[1, 15].Value = "Analysis Method";
+                        worksheet.Cells[1, 16].Value = "Analysis Laboratory";
+                    }
+                    else if (this.zooSampleIsChecked)
+                    {
+                        worksheet.Cells[1, 9].Value = "Comments";
+                        worksheet.Cells[1, 10].Value = "Dyntaxa ID";
+                        worksheet.Cells[1, 11].Value = "Concentration";
+                        worksheet.Cells[1, 12].Value = "Biovolume";
+                        worksheet.Cells[1, 13].Value = "Analysis Method";
+                        worksheet.Cells[1, 14].Value = "Analysis Laboratory";
+                    }
+                    
+                    for (int i = 0; i < sample.exportedSamples.Count; i++)
+                    {
+                        Plankton plankton = sample.exportedSamples[i];
+                        int row = i + 2;
+
+                        worksheet.Cells[row, 1].Value = sample.Origin;
+                        worksheet.Cells[row, 2].Style.Numberformat.Format = "yyyy-mm-dd";
+                        worksheet.Cells[row, 2].Formula = $"=DATE({sample.Date.Year},{sample.Date.Month},{sample.Date.Day})";
+                        worksheet.Cells[row, 3].Value = sample.SampleNumber;
+                        worksheet.Cells[row, 4].Value = plankton.TaxonPhylum;
+                        worksheet.Cells[row, 5].Value = plankton.TaxonClass;
+                        worksheet.Cells[row, 6].Value = plankton.TaxonOrder;
+                        worksheet.Cells[row, 7].Value = plankton.TaxonSpecies;
+                        worksheet.Cells[row, 8].Value = plankton.GetTaxonSpeciesFlagsAsString();
+                        if (this.phytoSampleIsChecked)
+                        {
+                            worksheet.Cells[row, 9].Value = plankton.TaxonMinSize;
+                            worksheet.Cells[row, 10].Value = plankton.TaxonMaxSize;
+                            worksheet.Cells[row, 11].Value = plankton.GetTaxonSpeciesCommentsAsString();
+                            worksheet.Cells[row, 12].Value = plankton.TaxonDyntaxaID;
+                            worksheet.Cells[row, 13].Value = plankton.TaxonConcentration;
+                            worksheet.Cells[row, 14].Value = plankton.TaxonBiovolume;
+                            worksheet.Cells[row, 15].Value = "SS-EN 15204:2006";
+                            worksheet.Cells[row, 16].Value = "Erkenlaboratoriet";
+                        }
+                        else if (this.zooSampleIsChecked)
+                        {
+                            worksheet.Cells[row, 9].Value = plankton.GetTaxonSpeciesCommentsAsString();
+                            worksheet.Cells[row, 10].Value = plankton.TaxonDyntaxaID;
+                            worksheet.Cells[row, 11].Value = plankton.TaxonConcentration;
+                            worksheet.Cells[row, 12].Value = plankton.TaxonBiovolume;
+                            worksheet.Cells[row, 13].Value = "Naturvårdsverkets Djurplankton i sjöar 2003-05-27";
+                            worksheet.Cells[row, 14].Value = "Erkenlaboratoriet";
+                        }
+                        
+                    }
+
+                    package.Save();
+                }
             }
 
         }

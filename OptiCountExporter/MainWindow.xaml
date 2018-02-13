@@ -61,17 +61,17 @@
         </StackPanel>
         
         <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" Orientation="Horizontal">
-            <Button VerticalAlignment="Center" Click="exportSamples_Click">Ok</Button>
+            <Button VerticalAlignment="Center" Click="exportSamples_Click">Compile</Button>
         </StackPanel>
         
-        <StatusBar Grid.Row="5" Grid.ColumnSpan="3">
+        <!-- <StatusBar Grid.Row="5" Grid.ColumnSpan="3">
             <StatusBarItem>
-                <Ellipse Name="connectionStatusIcon" Height="10" Width="10" Fill="Red" />
+                <Ellipse Name="connectionStatusIcon" Height="10" Width="10" Fill="{Binding connectionViewModel.ConnectionStatusColor}" />
             </StatusBarItem>
             <StatusBarItem>
-                <Label Name="connectionStatusText" Content="Not connected to Dyntaxa" />
+                <Label Name="connectionStatusText" Content="{Binding connectionViewModel.ConnectionStatusText}" />
             </StatusBarItem>
-        </StatusBar>
+        </StatusBar> -->
         
     </Grid>
     

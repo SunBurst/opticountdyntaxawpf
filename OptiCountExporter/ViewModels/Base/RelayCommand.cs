@@ -5,57 +5,77 @@ namespace OptiCountExporter
 {
     public class RelayCommand : ICommand
     {
-        #region Private Members
+        private Action<object> execute;
 
-        /// <summary>
-        /// The action to run
-        /// </summary>
-        private Action mAction;
+        private Predicate<object> canExecute;
 
-        #endregion
+        private event EventHandler CanExecuteChangedInternal;
 
-        #region Public Events
-
-        /// <summary>
-        /// The event thats fired when the <see cref="CanExecute(object)"/> value has changed
-        /// </summary>
-        public event EventHandler CanExecuteChanged = (sender, e) => { };
-
-        #endregion
-
-        #region Constructor
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public RelayCommand(Action action)
+        public RelayCommand(Action<object> execute)
+            : this(execute, DefaultCanExecute)
         {
-            mAction = action;
         }
 
-        #endregion
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
 
-        #region Command Methods
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException("canExecute");
+            }
 
-        /// <summary>
-        /// A relay command can always execute
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <returns></returns>
+            this.execute = execute;
+            this.canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
+            {
+                CommandManager.RequerySuggested += value;
+                this.CanExecuteChangedInternal += value;
+            }
+
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+                this.CanExecuteChangedInternal -= value;
+            }
+        }
+
         public bool CanExecute(object parameter)
+        {
+            return this.canExecute != null && this.canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            this.execute(parameter);
+        }
+
+        public void OnCanExecuteChanged()
+        {
+            EventHandler handler = this.CanExecuteChangedInternal;
+            if (handler != null)
+            {
+                //DispatcherHelper.BeginInvokeOnUIThread(() => handler.Invoke(this, EventArgs.Empty));
+                handler.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void Destroy()
+        {
+            this.canExecute = _ => false;
+            this.execute = _ => { return; };
+        }
+
+        private static bool DefaultCanExecute(object parameter)
         {
             return true;
         }
-
-        /// <summary>
-        /// Executes the commands Action
-        /// </summary>
-        /// <param name="parameter"></param>
-        public void Execute(object parameter)
-        {
-            mAction();
-        }
-
-        #endregion
     }
 }
