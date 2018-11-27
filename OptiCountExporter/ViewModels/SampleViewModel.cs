@@ -384,6 +384,28 @@ namespace OptiCountExporter
                     for (int i = 0; i < sample.exportedSamples.Count; i++)
                     {
                         Plankton plankton = sample.exportedSamples[i];
+                        if (string.IsNullOrEmpty(plankton.TaxonSpecies)) { 
+                            if (string.IsNullOrEmpty(plankton.TaxonOrder))
+                            {
+                                if (string.IsNullOrEmpty(plankton.TaxonClass))
+                                {
+                                    if (string.IsNullOrEmpty(plankton.TaxonPhylum))
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        plankton.TaxonSpecies = plankton.TaxonPhylum;
+                                    }
+                                }
+                                else {
+                                    plankton.TaxonSpecies = plankton.TaxonClass;
+                                }
+                            }
+                            else {
+                                plankton.TaxonSpecies = plankton.TaxonOrder;
+                            }
+                        }
                         int row = i + 2;
 
                         worksheet.Cells[row, 1].Value = sample.Origin;
