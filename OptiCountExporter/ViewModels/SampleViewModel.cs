@@ -436,8 +436,22 @@ namespace OptiCountExporter
                         worksheet.Cells[row, 8].Value = plankton.GetTaxonSpeciesFlagsAsString();
                         if (this.phytoSampleIsChecked)
                         {
-                            worksheet.Cells[row, 9].Value = plankton.TaxonMinSize;
-                            worksheet.Cells[row, 10].Value = plankton.TaxonMaxSize;
+                            if (plankton.TaxonMinSize == 0)
+                            {
+                                worksheet.Cells[row, 9].Value = "";
+                            }
+                            else
+                            {
+                                worksheet.Cells[row, 9].Value = plankton.TaxonMinSize;
+                            }
+                            if (plankton.TaxonMaxSize == 0)
+                            {
+                                worksheet.Cells[row, 10].Value = "";
+                            }
+                            else
+                            {
+                                worksheet.Cells[row, 10].Value = plankton.TaxonMaxSize;
+                            }
                             worksheet.Cells[row, 11].Value = plankton.GetTaxonSpeciesCommentsAsString();
                             worksheet.Cells[row, 12].Value = plankton.TaxonDyntaxaID;
                             worksheet.Cells[row, 13].Value = plankton.TaxonConcentration;
