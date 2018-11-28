@@ -384,26 +384,43 @@ namespace OptiCountExporter
                     for (int i = 0; i < sample.exportedSamples.Count; i++)
                     {
                         Plankton plankton = sample.exportedSamples[i];
-                        if (string.IsNullOrEmpty(plankton.TaxonSpecies)) { 
-                            if (string.IsNullOrEmpty(plankton.TaxonOrder))
+                        if (string.IsNullOrEmpty(plankton.TaxonSpecies))
+                        {
+                            if (string.IsNullOrEmpty(plankton.TaxonGenus))
                             {
-                                if (string.IsNullOrEmpty(plankton.TaxonClass))
+                                if (string.IsNullOrEmpty(plankton.TaxonFamily))
                                 {
-                                    if (string.IsNullOrEmpty(plankton.TaxonPhylum))
+                                    if (string.IsNullOrEmpty(plankton.TaxonOrder))
                                     {
-                                        continue;
+                                        if (string.IsNullOrEmpty(plankton.TaxonClass))
+                                        {
+                                            if (string.IsNullOrEmpty(plankton.TaxonPhylum))
+                                            {
+                                                continue;
+                                            }
+                                            else
+                                            {
+                                                plankton.TaxonSpecies = plankton.TaxonPhylum;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            plankton.TaxonSpecies = plankton.TaxonClass;
+                                        }
                                     }
                                     else
                                     {
-                                        plankton.TaxonSpecies = plankton.TaxonPhylum;
+                                        plankton.TaxonSpecies = plankton.TaxonOrder;
                                     }
                                 }
-                                else {
-                                    plankton.TaxonSpecies = plankton.TaxonClass;
+                                else
+                                {
+                                    plankton.TaxonSpecies = plankton.TaxonFamily;
                                 }
                             }
-                            else {
-                                plankton.TaxonSpecies = plankton.TaxonOrder;
+                            else
+                            {
+                                plankton.TaxonSpecies = plankton.TaxonGenus;
                             }
                         }
                         int row = i + 2;

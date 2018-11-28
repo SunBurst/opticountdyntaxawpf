@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"><?define OptiCountExporter_TargetDir=$(var.OptiCountExporter.TargetDir)?>
+	<Product Id="7e7950e4-0f3f-4b1d-97ae-e1761114c761" Name="OptiCountExporter" Language="1033" Version="1.0.0.0" Manufacturer="Erkenlaboratoriet" UpgradeCode="890cfe6b-2517-48a3-8adb-4cdcd9a2226f">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <UIRef Id="WixUI_Minimal" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="OptiCountExporter" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationShortcutDesktop" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="OptiCountExporter">
+          <Directory Id="Files" Name="Files" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="OptiCountExporter" />
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- </Component> -->
+			<Component Id="OptiCountExporter.exe" Guid="c157e6b4-4bb0-4049-a1f7-05420b785913">
+			  <File Id="OptiCountExporter.exe" Name="OptiCountExporter.exe" Source="$(var.OptiCountExporter_TargetDir)OptiCountExporter.exe" />
+			</Component>
+			<Component Id="OptiCountExporter.exe.config" Guid="cebaeeea-8278-4ee4-8eb4-0163706536e8">
+			  <File Id="OptiCountExporter.exe.config" Name="OptiCountExporter.exe.config" Source="$(var.OptiCountExporter_TargetDir)OptiCountExporter.exe.config" />
+			</Component>
+			<Component Id="ArtDatabanken.dll" Guid="58edcdb3-2fa8-4423-b17c-3f88fd56604e">
+			  <File Id="ArtDatabanken.dll" Name="ArtDatabanken.dll" Source="$(var.OptiCountExporter_TargetDir)ArtDatabanken.dll" />
+			</Component>
+			<Component Id="ArtDatabanken.Data.dll" Guid="b15fa3f6-df24-45a8-85f6-87f682ce7c96">
+			  <File Id="ArtDatabanken.Data.dll" Name="ArtDatabanken.Data.dll" Source="$(var.OptiCountExporter_TargetDir)ArtDatabanken.Data.dll" />
+			</Component>
+			<Component Id="ArtDatabanken.WebService.Client.dll" Guid="a8d52cd9-af87-4d16-82f7-009a30277330">
+			  <File Id="ArtDatabanken.WebService.Client.dll" Name="ArtDatabanken.WebService.Client.dll" Source="$(var.OptiCountExporter_TargetDir)ArtDatabanken.WebService.Client.dll" />
+			</Component>
+			<Component Id="ArtDatabanken.WebService.Data.dll" Guid="d00e06c8-80a4-41e7-a51d-62071ec364db">
+			  <File Id="ArtDatabanken.WebService.Data.dll" Name="ArtDatabanken.WebService.Data.dll" Source="$(var.OptiCountExporter_TargetDir)ArtDatabanken.WebService.Data.dll" />
+			</Component>
+			<Component Id="ArtDatabanken.WebService.Proxy.dll" Guid="995ca41b-83df-4211-bb60-8847d0810471">
+			  <File Id="ArtDatabanken.WebService.Proxy.dll" Name="ArtDatabanken.WebService.Proxy.dll" Source="$(var.OptiCountExporter_TargetDir)ArtDatabanken.WebService.Proxy.dll" />
+			</Component>
+			<Component Id="EPPlus.dll" Guid="2b259c86-4c60-4eec-86f3-7daca8040e33">
+			  <File Id="EPPlus.dll" Name="EPPlus.dll" Source="$(var.OptiCountExporter_TargetDir)EPPlus.dll" />
+			</Component>
+			<Component Id="ExcelDataReader.dll" Guid="98c6be38-c02f-4462-978b-d0940bd7bc6a">
+			  <File Id="ExcelDataReader.dll" Name="ExcelDataReader.dll" Source="$(var.OptiCountExporter_TargetDir)ExcelDataReader.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="3181E747-80F4-43B0-97FB-94D3A8E53D7E">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="OptiCountExporter" Description="OptiCountExporter" Target="[INSTALLFOLDER]OptiCountExporter.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\OptiCountExporter" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+     <Component Id="ApplicationShortcutDesktop" Guid="4235DBF6-FF84-4675-93F5-51897F72B571">
+       <Shortcut Id="ApplicationDesktopShortcut" Name="OptiCountExporter" Description="OptiCountExporter" Target="[INSTALLFOLDER]OptiCountExporter.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveDesktopFolder" Directory="DesktopFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\OptiCountExporter" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+</Wix>
