@@ -394,7 +394,21 @@ namespace OptiCountExporter
                                     {
                                         if (string.IsNullOrEmpty(plankton.TaxonClass))
                                         {
-                                            if (string.IsNullOrEmpty(plankton.TaxonPhylum) == false)
+                                            if (string.IsNullOrEmpty(plankton.TaxonPhylum))
+                                            {
+                                                if (string.IsNullOrEmpty(plankton.TaxonSuperPhylum))
+                                                {
+                                                    if (string.IsNullOrEmpty(plankton.TaxonOrganismGroup) == false)
+                                                    {
+                                                        plankton.TaxonSpecies = plankton.TaxonOrganismGroup;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    plankton.TaxonSpecies = plankton.TaxonSuperPhylum;
+                                                }
+                                            }
+                                            else
                                             {
                                                 plankton.TaxonSpecies = plankton.TaxonPhylum;
                                             }

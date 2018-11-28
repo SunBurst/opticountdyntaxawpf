@@ -8,6 +8,7 @@ namespace OptiCountExporter
 {
     public class Plankton
     {
+        protected string taxonSuperPhylum;
         protected string taxonPhylum;
         protected string taxonClass;
         protected string taxonOrder;
@@ -26,6 +27,21 @@ namespace OptiCountExporter
         protected List<String> taxonSpeciesComments;
         protected List<String> taxonSpeciesIgnores;
         protected List<String> taxonSpeciesMinAndMax;
+
+        public string TaxonSuperPhylum
+        {
+            get
+            {
+                return this.taxonSuperPhylum;
+            }
+            set
+            {
+                if (this.taxonSuperPhylum != value)
+                {
+                    this.taxonSuperPhylum = value;
+                }
+            }
+        }
 
         public string TaxonPhylum
         {
@@ -631,7 +647,7 @@ namespace OptiCountExporter
 
         public override string ToString()
         {
-            return $"Phylum: {this.TaxonPhylum} Class: {this.TaxonClass} Order: {this.TaxonOrder} " +
+            return $"SuperPhylum: {this.TaxonSuperPhylum} Phylum: {this.TaxonPhylum} Class: {this.TaxonClass} Order: {this.TaxonOrder} " +
                 $"Family: {this.TaxonFamily} Genus: {this.TaxonGenus} Organism Group: {this.TaxonOrganismGroup} Species: {this.TaxonSpecies} " +
                 $"Dyntaxa ID: {this.TaxonDyntaxaID} Concetration: {this.TaxonConcentration} Biovolume: {this.TaxonBiovolume} " +
                 $"Freshweight: {this.TaxonFreshweight} Ignores: {String.Join(" ", this.TaxonSpeciesIgnores)} " +

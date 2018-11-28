@@ -69,6 +69,9 @@ namespace OptiCountExporter
                         case "Phylum":
                             plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
                             break;
+                        case "SuperPhylum":
+                            plankton.TaxonSuperPhylum = taxonTreeNode.Taxon.ScientificName;
+                            break;
                         case "Organism group":
                             plankton.TaxonOrganismGroup = taxonTreeNode.Taxon.ScientificName;
                             break;
