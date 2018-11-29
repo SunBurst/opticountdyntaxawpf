@@ -51,6 +51,9 @@ namespace OptiCountExporter
                         plankton.TaxonDyntaxaID = taxonTreeNode.Taxon.Id;
                     switch (categoryName)
                     {
+                        case "Variety":
+                            plankton.TaxonVariety = taxonTreeNode.Taxon.ScientificName;
+                            break;
                         case "Species":
                             plankton.TaxonSpecies = taxonTreeNode.Taxon.ScientificName;
                             break;
@@ -69,7 +72,7 @@ namespace OptiCountExporter
                         case "Phylum":
                             plankton.TaxonPhylum = taxonTreeNode.Taxon.ScientificName;
                             break;
-                        case "SuperPhylum":
+                        case "Superphylum":
                             plankton.TaxonSuperPhylum = taxonTreeNode.Taxon.ScientificName;
                             break;
                         case "Organism group":

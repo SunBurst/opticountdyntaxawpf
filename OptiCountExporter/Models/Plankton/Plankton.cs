@@ -16,6 +16,7 @@ namespace OptiCountExporter
         protected string taxonGenus;
         protected string taxonOrganismGroup;
         protected string taxonSpecies;
+        protected string taxonVariety;
         protected int taxonDyntaxaID;
         protected bool taxonDyntaxaIDIsInitialized;
         protected int taxonMinSize;
@@ -144,6 +145,21 @@ namespace OptiCountExporter
                 if (this.taxonSpecies != value)
                 {
                     this.taxonSpecies = value;
+                }
+            }
+        }
+
+        public string TaxonVariety
+        {
+            get
+            {
+                return this.taxonVariety;
+            }
+            set
+            {
+                if (this.taxonVariety != value)
+                {
+                    this.taxonVariety = value;
                 }
             }
         }

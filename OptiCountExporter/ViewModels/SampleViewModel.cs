@@ -384,6 +384,22 @@ namespace OptiCountExporter
                     for (int i = 0; i < sample.exportedSamples.Count; i++)
                     {
                         Plankton plankton = sample.exportedSamples[i];
+
+                        if (string.IsNullOrEmpty(plankton.TaxonPhylum))
+                        {
+                            if (string.IsNullOrEmpty(plankton.TaxonSuperPhylum))
+                            {
+                                if (string.IsNullOrEmpty(plankton.TaxonOrganismGroup) == false)
+                                {
+                                    plankton.TaxonPhylum = plankton.TaxonOrganismGroup;
+                                }
+                            }
+                            else
+                            {
+                                plankton.TaxonPhylum = plankton.TaxonSuperPhylum;
+                            }
+                        }
+
                         if (string.IsNullOrEmpty(plankton.TaxonSpecies))
                         {
                             if (string.IsNullOrEmpty(plankton.TaxonGenus))
@@ -394,21 +410,7 @@ namespace OptiCountExporter
                                     {
                                         if (string.IsNullOrEmpty(plankton.TaxonClass))
                                         {
-                                            if (string.IsNullOrEmpty(plankton.TaxonPhylum))
-                                            {
-                                                if (string.IsNullOrEmpty(plankton.TaxonSuperPhylum))
-                                                {
-                                                    if (string.IsNullOrEmpty(plankton.TaxonOrganismGroup) == false)
-                                                    {
-                                                        plankton.TaxonSpecies = plankton.TaxonOrganismGroup;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    plankton.TaxonSpecies = plankton.TaxonSuperPhylum;
-                                                }
-                                            }
-                                            else
+                                            if (string.IsNullOrEmpty(plankton.TaxonPhylum) == false)
                                             {
                                                 plankton.TaxonSpecies = plankton.TaxonPhylum;
                                             }
@@ -433,6 +435,14 @@ namespace OptiCountExporter
                                 plankton.TaxonSpecies = plankton.TaxonGenus;
                             }
                         }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(plankton.TaxonVariety) == false)
+                            {
+                                plankton.TaxonSpecies = plankton.TaxonVariety;
+                            }
+                        }
+
                         int row = i + 2;
 
                         worksheet.Cells[row, 1].Value = sample.Origin;
@@ -480,7 +490,7 @@ namespace OptiCountExporter
                         }
                         
                     }
-
+                    sample.exportedSamples.Clear();
                     package.Save();
                 }
             }
